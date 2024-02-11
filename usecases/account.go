@@ -1,36 +1,36 @@
+// usecases/account.go
+
 package usecases
 
-import "github.com/MarkTBSS/go-hexagonalMinimal/repositories"
+import (
+	"fmt"
 
-type CreateAccountData struct {
-	Name    string
-	Balance float32
-}
-
-type AccountData struct {
-	ID   string
-	Name string
-}
+	"github.com/MarkTBSS/go-hexagonalMinimal/repositories"
+)
 
 type AccountUsecase interface {
-	CreateAccount(a *CreateAccountData) error
-	GetAccountByID(id string) (*AccountData, error)
+	CreateAccount(name string) error
+	GetAccountByID(id string) (*repositories.Account, error)
 }
 
 type accountUsecase struct {
-	repo repositories.AccountRepositories
+	repo repositories.AccountRepository
 }
 
-func NewAccountUsecase(repo repositories.AccountRepositories) AccountUsecase {
+func NewAccountUsecase(repo repositories.AccountRepository) AccountUsecase {
+	fmt.Println("Creating new account usecase with repository:", repo)
 	return &accountUsecase{
 		repo: repo,
 	}
 }
 
-func (u *accountUsecase) CreateAccount(a *CreateAccountData) error {
+func (u *accountUsecase) CreateAccount(name string) error {
+	fmt.Println("Creating account with name:", name)
+	// Implementation details to create account
 	return nil
 }
 
-func (u *accountUsecase) GetAccountByID(id string) (*AccountData, error) {
-	return nil, nil
+func (u *accountUsecase) GetAccountByID(id string) (*repositories.Account, error) {
+	fmt.Println("Fetching account with ID:", id)
+	return u.repo.GetAccountByID(id)
 }
