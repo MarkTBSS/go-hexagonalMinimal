@@ -9,11 +9,14 @@ import (
 
 func main() {
 	repo := repositories.NewAccountRepository("Charlie")
-	fmt.Println("Repository created: ", repo)
+	fmt.Println("main/main.go Line 12 : ", repo)
 
 	usecase := usecases.NewAccountUsecase(repo)
-	fmt.Println("Usecase created: ", usecase)
+	fmt.Println("main/main.go Line 15", usecase)
 
-	account, _ := usecase.GetAccountByID("z")
-	fmt.Println("Account retrieved: ", account)
+	err := usecase.CreateAccount("Account Name")
+	fmt.Println("main/main.go Line 18", err)
+
+	getAccount, _ := usecase.GetAccountByID("2")
+	fmt.Println("main/main.go Line 18", getAccount)
 }

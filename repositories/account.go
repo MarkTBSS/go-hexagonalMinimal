@@ -1,5 +1,3 @@
-// repositories/account.go
-
 package repositories
 
 import "fmt"
@@ -19,20 +17,20 @@ type accountRepository struct {
 }
 
 func NewAccountRepository(dbconn string) AccountRepository {
-	fmt.Println("Creating new account repository with connection:", dbconn)
+	fmt.Println("repositories/account.go Line 20 : ", dbconn)
 	return &accountRepository{
 		dbconn: dbconn,
 	}
 }
 
 func (r *accountRepository) CreateAccount(a *Account) error {
-	fmt.Println("Creating account in repository:", a)
+	fmt.Println("repositories/account.go Line 27 : ", a)
 	// Implementation details to create account in database
 	return nil
 }
 
 func (r *accountRepository) GetAccountByID(id string) (*Account, error) {
-	fmt.Println("Fetching account from repository with ID:", id)
+	fmt.Println("repositories/account.go Line 33 : ", id)
 	// Implementation details to retrieve account from database
 	return &Account{
 		ID:   id,

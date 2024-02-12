@@ -1,5 +1,3 @@
-// usecases/account.go
-
 package usecases
 
 import (
@@ -18,19 +16,19 @@ type accountUsecase struct {
 }
 
 func NewAccountUsecase(repo repositories.AccountRepository) AccountUsecase {
-	fmt.Println("Creating new account usecase with repository:", repo)
+	fmt.Println("usecases/account.go Line 19 : ", repo)
 	return &accountUsecase{
 		repo: repo,
 	}
 }
 
 func (u *accountUsecase) CreateAccount(name string) error {
-	fmt.Println("Creating account with name:", name)
+	fmt.Println("usecases/account.go Line 26 : ", name)
 	// Implementation details to create account
 	return nil
 }
 
 func (u *accountUsecase) GetAccountByID(id string) (*repositories.Account, error) {
-	fmt.Println("Fetching account with ID:", id)
+	fmt.Println("usecases/account.go Line 32 : ", id)
 	return u.repo.GetAccountByID(id)
 }
