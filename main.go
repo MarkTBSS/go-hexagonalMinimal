@@ -1,15 +1,3 @@
-/* repo := repositories.NewAccountRepository("Charlie")
-fmt.Println("main/main.go Line 12 : ", repo)
-
-usecase := usecases.NewAccountUsecase(repo)
-fmt.Println("main/main.go Line 15", usecase)
-
-err := usecase.CreateAccount("Account Name")
-fmt.Println("main/main.go Line 18", err)
-
-getAccount, _ := usecase.GetAccountByID("2")
-fmt.Println("main/main.go Line 18", getAccount) */
-
 package main
 
 import (
@@ -17,12 +5,11 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/MarkTBSS/go-hexagonalMinimal/adapters"
+	"github.com/MarkTBSS/go-hexagonalMinimal/core"
 	"github.com/gofiber/fiber/v2"
 	_ "github.com/lib/pq"
 )
-
-// Database instance
-var db *sql.DB
 
 // Database settings
 const (
@@ -33,108 +20,32 @@ const (
 	dbname   = "hexagonal_minimal"
 )
 
-// Employee struct
-type Employee struct {
-	ID     int64  `json:"id"`
-	Name   string `json:"name"`
-	Salary string `json:"salary"`
-	Age    string `json:"age"`
-}
-
-// Employees struct
-type Employees struct {
-	Employees []Employee `json:"employees"`
-}
-
-func Connect() error {
-	var err error
-	db, err = sql.Open("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname))
-	if err != nil {
-		return err
-	}
-	if err = db.Ping(); err != nil {
-		return err
-	}
-	return nil
-}
-
 func main() {
-	// Connect with database
-	if err := Connect(); err != nil {
+	db, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname))
+	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.Close()
+
+	// Connect with database
+	if err := db.Ping(); err != nil {
+		log.Fatal(err)
+	}
+
+	// Initialize repository and usecase
+	repository := adapters.NewDBRepository(db)
+	usecase := core.NewEmployeeUsecase(repository)
+
+	// Initialize HTTP handler
+	httpHandler := adapters.NewHTTPHandler(usecase)
 
 	// Create a Fiber app
 	app := fiber.New()
 
-	// Get all records from postgreSQL
-	app.Get("/employee", func(c *fiber.Ctx) error {
-		// Select all Employee(s) from database
-		rows, err := db.Query("SELECT id, name, salary, age FROM employees order by id")
-		if err != nil {
-			return c.Status(500).SendString(err.Error())
-		}
-		defer rows.Close()
-		result := Employees{}
+	// Routes
+	app.Post("/employee", httpHandler.CreateEmployee)
+	app.Get("/employee/:id", httpHandler.GetEmployeeByID)
 
-		for rows.Next() {
-			employee := Employee{}
-			if err := rows.Scan(&employee.ID, &employee.Name, &employee.Salary, &employee.Age); err != nil {
-				return err // Exit if we get an error
-			}
-
-			// Append Employee to Employees
-			result.Employees = append(result.Employees, employee)
-		}
-		// Return Employees in JSON format
-		return c.JSON(result)
-	})
-
-	// Add record into postgreSQL
-	app.Post("/employee", func(c *fiber.Ctx) error {
-		// New Employee struct
-		u := new(Employee)
-
-		// Parse body into struct
-		if err := c.BodyParser(u); err != nil {
-			return c.Status(400).SendString(err.Error())
-		}
-
-		// Insert Employee into database
-		res, err := db.Query("INSERT INTO employees (name, salary, age)VALUES ($1, $2, $3)", u.Name, u.Salary, u.Age)
-		if err != nil {
-			return err
-		}
-
-		// Print result
-		log.Println(res)
-
-		// Return Employee in JSON format
-		return c.JSON(u)
-	})
-
-	// Update record into postgreSQL
-	app.Put("/employee", func(c *fiber.Ctx) error {
-		// New Employee struct
-		u := new(Employee)
-
-		// Parse body into struct
-		if err := c.BodyParser(u); err != nil {
-			return c.Status(400).SendString(err.Error())
-		}
-
-		// Update Employee into database
-		res, err := db.Query("UPDATE employees SET name=$1,salary=$2,age=$3 WHERE id=$4", u.Name, u.Salary, u.Age, u.ID)
-		if err != nil {
-			return err
-		}
-
-		// Print result
-		log.Println(res)
-
-		// Return Employee in JSON format
-		return c.Status(201).JSON(u)
-	})
-
+	// Listen on port 3000
 	log.Fatal(app.Listen(":3000"))
 }
