@@ -1,19 +1,21 @@
 package adapters
 
 import (
-	"github.com/MarkTBSS/go-hexagonalMinimal/core"
+	"log"
+
+	"github.com/MarkTBSS/go-hexagonalMinimal/core/employee"
 	"github.com/gofiber/fiber/v2"
 )
 
 type HTTPHandler struct {
-	usecase *core.EmployeeUsecase
+	usecase *employee.EmployeeUsecase
 }
 
-func NewHTTPHandler(usecase *core.EmployeeUsecase) *HTTPHandler {
+func NewHTTPHandler(usecase *employee.EmployeeUsecase) *HTTPHandler {
 	return &HTTPHandler{usecase}
 }
-
 func (h *HTTPHandler) CreateEmployee(c *fiber.Ctx) error {
+	log.Println("IN : adapters.CreateEmployee()")
 	var req struct {
 		Name   string `json:"name"`
 		Salary string `json:"salary"`
@@ -25,14 +27,22 @@ func (h *HTTPHandler) CreateEmployee(c *fiber.Ctx) error {
 	if err := h.usecase.CreateEmployee(req.Name, req.Salary, req.Age); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
+	log.Println("OUT : adapters.CreateEmployee()")
 	return c.SendStatus(fiber.StatusCreated)
 }
-
 func (h *HTTPHandler) GetEmployeeByID(c *fiber.Ctx) error {
+	//log.Println("14 : Package adapters - http_handler.go GetEmployeeByID()")
 	id := c.Params("id")
 	employee, err := h.usecase.GetEmployeeByID(id)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).SendString(err.Error())
 	}
 	return c.JSON(employee)
+}
+func (h *HTTPHandler) GetAllEmployees(c *fiber.Ctx) error {
+	employees, err := h.usecase.GetAllEmployees()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+	return c.JSON(employees)
 }

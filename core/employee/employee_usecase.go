@@ -1,15 +1,6 @@
-package core
+package employee
 
-type Employee struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	Salary string `json:"salary"`
-	Age    string `json:"age"`
-}
-
-type Employees struct {
-	Employees []Employee `json:"employees"`
-}
+import "log"
 
 type EmployeeUsecase struct {
 	repository EmployeeRepository
@@ -20,14 +11,20 @@ func NewEmployeeUsecase(repository EmployeeRepository) *EmployeeUsecase {
 }
 
 func (uc *EmployeeUsecase) CreateEmployee(name, salary, age string) error {
+	log.Println("IN : employee.CreateEmployee()")
 	Employee := &Employee{
 		Name:   name,
 		Salary: salary,
 		Age:    age,
 	}
+	log.Println("OUT : employee.CreateEmployee()")
 	return uc.repository.Create(Employee)
 }
 
 func (uc *EmployeeUsecase) GetEmployeeByID(id string) (*Employee, error) {
 	return uc.repository.GetByID(id)
+}
+
+func (uc *EmployeeUsecase) GetAllEmployees() ([]*Employee, error) {
+	return uc.repository.GetAll()
 }
