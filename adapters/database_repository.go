@@ -3,6 +3,7 @@ package adapters
 import (
 	"database/sql"
 	"errors"
+	"log"
 
 	"github.com/MarkTBSS/go-hexagonalMinimal/core/employee"
 )
@@ -16,7 +17,9 @@ func NewDBRepository(db *sql.DB) *DBRepository {
 }
 
 func (r *DBRepository) Create(employee *employee.Employee) error {
+	log.Println("IN : database_repository.go : adapters.Create()")
 	_, err := r.db.Exec("INSERT INTO employees (name, salary, age)VALUES ($1, $2, $3)", employee.Name, employee.Salary, employee.Age)
+	log.Println("OUT : database_repository.go : adapters.Create()")
 	return err
 }
 func (r *DBRepository) GetByID(id string) (*employee.Employee, error) {

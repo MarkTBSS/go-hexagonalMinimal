@@ -11,13 +11,13 @@ func NewEmployeeUsecase(repository EmployeeRepository) *EmployeeUsecase {
 }
 
 func (uc *EmployeeUsecase) CreateEmployee(name, salary, age string) error {
-	log.Println("IN : employee.CreateEmployee()")
+	log.Println("IN : employee_usecase.go : employee.CreateEmployee()")
 	Employee := &Employee{
 		Name:   name,
 		Salary: salary,
 		Age:    age,
 	}
-	log.Println("OUT : employee.CreateEmployee()")
+	log.Println("OUT : employee_usecase.go : employee.CreateEmployee()")
 	return uc.repository.Create(Employee)
 }
 

@@ -15,7 +15,7 @@ func NewHTTPHandler(usecase *employee.EmployeeUsecase) *HTTPHandler {
 	return &HTTPHandler{usecase}
 }
 func (h *HTTPHandler) CreateEmployee(c *fiber.Ctx) error {
-	log.Println("IN : adapters.CreateEmployee()")
+	log.Println("IN : http_handler.go : adapters.CreateEmployee()")
 	var req struct {
 		Name   string `json:"name"`
 		Salary string `json:"salary"`
@@ -27,11 +27,10 @@ func (h *HTTPHandler) CreateEmployee(c *fiber.Ctx) error {
 	if err := h.usecase.CreateEmployee(req.Name, req.Salary, req.Age); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
-	log.Println("OUT : adapters.CreateEmployee()")
+	log.Println("OUT : http_handler.go : adapters.CreateEmployee()")
 	return c.SendStatus(fiber.StatusCreated)
 }
 func (h *HTTPHandler) GetEmployeeByID(c *fiber.Ctx) error {
-	//log.Println("14 : Package adapters - http_handler.go GetEmployeeByID()")
 	id := c.Params("id")
 	employee, err := h.usecase.GetEmployeeByID(id)
 	if err != nil {
