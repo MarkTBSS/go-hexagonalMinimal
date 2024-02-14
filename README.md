@@ -1,3 +1,4 @@
+```
 hexagonal/
 │
 ├── adapters/
@@ -22,3 +23,4 @@ hexagonal/
 │   └── main.go
 │
 └── go.mod
+```
